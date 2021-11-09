@@ -1,1 +1,1 @@
-# Stata-intermedio
+# R-course
