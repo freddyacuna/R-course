@@ -1,3 +1,6 @@
+# Para responder las siguientes preguntas use los datos obtenidos de “World Development Indicators” (WDI)
+# en la Guía de Ejercicios 2 y que fue explorado en la Guía 3.
+
 library(dplyr)
 library(forcats)
 library(ggplot2)
@@ -7,10 +10,26 @@ library(ggfittext)
 library(treemapify)
 options(scipen=999)
 
+wbData3f <- readr::read_rds("datos/wbData3_finanzas.rds")
+
+
+# Pregunta 1
+# Grafique la evolución del crédito interno al sector privado otorgado por los bancos (% del PIB) para Chile,
+# Argentina y Estados Unidos en el período 1960-2020 usando un gráfico de líneas
 
 wbData3f %>% filter(country %in% c("Argentina", "Chile", "United States")) %>%
 ggplot(aes(x = year, y = credit)) +
 geom_line(aes(colour = country))
+
+
+# Ejercicio 1: Incluya el layer theme_classic() ¿Qué obtiene?
+# Ejercicio 2: Reemplace colour = country por linetype = country ¿Qué obtiene?
+# Ejercicio 3: Use otros themes que incluye el paquete ggthemes ¿Qué cambios observa?
+# Ejercicio 4: ¿Cómo incluir tus propios colores para la línea que representa cada país? (Ayuda: ver
+# scale_colour_manual())
+# Ejercicio 5: ¿Cómo definir tus propias líneas para representar a cada país? (Ayuda: ver
+# scale_linetype_manual())
+# Ejercicio 6: ¿Cómo se puede personalizar un gráfico? (Ayuda: ver theme())
 
 
 wbData3f %>% filter(country %in% c("Argentina", "Chile", "United States")) %>%
@@ -41,12 +60,16 @@ legend.position = c(0.9, 0.4)
 )
 
 
-
+# Pregunta 2
+# Construya el siguiente gráfico de barras que muestra el número de países en cada una de las regiones el año
+# 2019.
 # fill = "#31a377"
 wbData3f %>% filter(year == 2018) %>%
 ggplot(aes(x = region)) +
 geom_bar(aes(fill = region)) +
 coord_flip()
+
+
 wbData3f %>% filter(year == 2018) %>%
 ggplot(aes(x = fct_rev(fct_infreq(as_factor(region))))) +
 geom_bar(fill = "#31a377") +
@@ -60,7 +83,9 @@ theme(rect = element_blank(),
 axis.text.x = element_blank(),
 axis.ticks = element_blank())
 
-
+# Pregunta 3
+# Usando sólo información acerca de los diez países con mayor población el año 2019, construya un gráfico de
+# torta y un treemap para representar el porcentaje de la población que representa cada uno de estos países.
 
 wbData3f %>% filter(year == 2019) %>%
 slice_max(population, n = 10) %>%
@@ -70,6 +95,8 @@ ggplot(aes(x= 1, y = prop, fill = country)) +
 geom_bar(stat = "identity", color = "white") +
 coord_polar(theta = 'y') +
 theme_void()
+
+
 wbData3f %>% filter(year == 2019) %>%
 slice_max(population, n = 10) %>%
 mutate(prop = round(100*population/sum(population),1)) %>%
@@ -86,7 +113,8 @@ theme(axis.title =element_blank(),
 axis.text =element_blank(),
 axis.ticks =element_blank())
 
-
+# Pregunta 4
+# Construya el siguiente gráfico de barras que muestra los 10 países con el mayor PIB per cápita el 2019.
 wbData3f %>% filter(year == 2019) %>% slice_max(gdppc, n = 10) %>%
 ggplot(aes(x = fct_reorder(as_factor(country), gdppc), y = gdppc,
 label = paste("USD", round(gdppc,0)))) +
@@ -102,6 +130,8 @@ coord_flip() +
 theme(rect = element_blank(),
 axis.text.x = element_blank(),
 axis.ticks = element_blank())
+
+
 wbData3f %>% filter(year == 2019) %>% slice_max(gdppc, n = 10) %>%
 ggplot(aes(x = fct_reorder(as_factor(country), gdppc), y = gdppc,
 label = paste("USD", round(gdppc,0)))) +
@@ -121,6 +151,8 @@ theme(rect = element_blank(),
 axis.text.x = element_blank(),
 axis.ticks = element_blank(),
 legend.position= "top")
+
+
 wbData3f %>% filter(year == 2019) %>% slice_max(gdppc, n = 10) %>%
 mutate(highlight = case_when(
 region == "Este Asiático y Pacífico" ~ "Este Asiático y Pacífico",
@@ -146,6 +178,8 @@ axis.ticks = element_blank(),
 legend.position= "top",
 legend.text = element_text(size = 8))
 
+# Pregunta 5
+# Construya el siguiente gráfico que muestra la mediana del PIB per cápita por región en el año 2018
 
 wbData3f %>% filter(year == 2018) %>%
 group_by(region) %>%
@@ -167,6 +201,9 @@ theme(rect = element_blank(),
 axis.text.x = element_blank(),
 axis.ticks = element_blank())
 
+# Pregunta 6
+# Usando un diagrama de caja, compare el crédito interno al sector privado otorgado por los bancos (% del
+# PIB) entre las diferentes regiones del mundo para el año 2018
 
 wbData3f %>% filter(year == 2018) %>%
 ggplot(aes(x = region, y = credit, fill = region)) +
@@ -178,7 +215,8 @@ y = "Credito bancario/PIB (%)") +
 coord_flip() +
 theme_classic()
 
-
+# Pregunta 7
+# Construya un histograma que represente la distribución del PIB per cápita el año 2019
 
 wbData3f %>% filter(year == 2019) %>%
 ggplot(aes(x = gdppc)) +
@@ -194,6 +232,8 @@ x = "PIB per cápita (miles de dólares)",
 y = "Frecuencia") +
 theme_classic()
 
+# Pregunta 8
+# Construya la función de distribución acumulada del PIB per cápita para el año 2019
 
 
 # ecdf: empirical cumulative distribution function
@@ -210,6 +250,8 @@ x = "PIB per cápita (miles de dólares)",
 y = "Proporción de países") +
 theme_classic()
 
+# Pregunta 9
+# Use un gráfico de dispersión del número de ATMs por 100.000 adultos y PIB per cápita para el año 2018
 
 wbData3f %>% filter(year==2018) %>%
 ggplot(aes(x=gdppc, y=atm))+
@@ -221,6 +263,8 @@ x = "PIB per cápita",
 y = "ATMs/100000 adultos") +
 theme(panel.background = element_blank(),
 axis.line = element_line())
+
+
 wbData3f %>% filter(year==2018) %>%
 ggplot(aes(x=gdppc, y=atm))+
 geom_point(alpha = 0.4, size = 0.8) +
