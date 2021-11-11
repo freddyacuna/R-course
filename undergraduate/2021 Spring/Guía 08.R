@@ -51,4 +51,4 @@ m
 str_sub(country, m, m)
 
 # (k) Liste los países que comienzan con 2 consonantes
-str_subset(country, "ˆ[ˆaeiouAEIOU]{2}")
+str_subset(country, "^[^aeiouAEIOU]{2}")
